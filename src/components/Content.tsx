@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api } from "../services/api";
 
 import "../styles/content.scss";
@@ -31,18 +31,22 @@ export function Content(props: ContentProps) {
     {} as GenreResponseProps
   );
 
-  useEffect(() => {
+  const data = useCallback(() => {
     api
-      .get<MovieProps[]>(`movies/?Genre_id=${props.selectedGenreId}`)
-      .then((response) => {
-        setMovies(response.data);
-      });
+    .get<MovieProps[]>(`movies/?Genre_id=${props.selectedGenreId}`)
+    .then((response) => {
+      setMovies(response.data);
+    });
 
-    api
-      .get<GenreResponseProps>(`genres/${props.selectedGenreId}`)
-      .then((response) => {
-        setSelectedGenre(response.data);
-      });
+  api
+    .get<GenreResponseProps>(`genres/${props.selectedGenreId}`)
+    .then((response) => {
+      setSelectedGenre(response.data);
+    });
+  }, [props.selectedGenreId]);
+
+  useEffect(() => {
+    data();
   }, [props.selectedGenreId]);
 
   return (
